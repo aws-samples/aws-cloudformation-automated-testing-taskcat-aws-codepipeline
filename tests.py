@@ -9,26 +9,25 @@
 """
 
 import argparse
-import boto3
-import getpass
 import json
 import os
 import shutil
 import sys
+import aws_interact as aws
 import web_interact as wi
 import test_objects as tob
-from botocore.exceptions import ClientError
 from datetime import datetime
 
 BUCKET = "solutions-test-output"
+USER_KEY = "pipeline-user"
+PASSW_KEY = "pipeline-passw"
+SECRET = "pipeline-user-credentials"
 
 
-def test_pages(outputs, user, passw, filename):
+def test_pages(outputs, filename):
     """Test all ohdsi web page functionality
 
         :param outputs: list of urls and keys as dicts for pages being tested
-        :param user: username as string
-        :param passw: password as string
         :param filename: name of file to store test results in
         :return: list containing all test result dicts
     """
@@ -45,11 +44,11 @@ def test_pages(outputs, user, passw, filename):
         if "Deployment" not in key:
             # attempt to connect to the page and record
             if "RStudio" in key:
-                all_tests = test_page(driver, user, passw, link, all_tests, key, "//button[@type='submit']")
+                all_tests = test_page(driver, link, all_tests, key, "//button[@type='submit']")
             elif "Jupyter" in key:
-                all_tests = test_page(driver, user, passw, link, all_tests, key, "//input[@id='login_submit']")
+                all_tests = test_page(driver, link, all_tests, key, "//input[@id='login_submit']")
             elif "ATLAS" in key:
-                all_tests = test_page(driver, user, passw, link, all_tests, key, "ATLAS")
+                all_tests = test_page(driver, link, all_tests, key, "ATLAS")
             else:
                 all_tests.append(tob.new_test('UNKNOWN PAGE', 'N/A'))
 
@@ -59,12 +58,10 @@ def test_pages(outputs, user, passw, filename):
     return all_tests
 
 
-def red_test(output, user, passw, filename):
+def red_test(output, filename):
     """Test redcap web page functionality
 
         :param output: url and key as dict for page being tested
-        :param user: username as string
-        :param passw: password as string
         :param filename: name of file to store test results in
         :return: list containing all test result dicts
     """
@@ -74,19 +71,33 @@ def red_test(output, user, passw, filename):
     link = output["OutputValue"]
     key = output["OutputKey"]
 
-    all_tests = test_page(driver, user, passw, link, [], key, "//button[@id='login_btn']")
+    all_tests = test_page(driver, link, [], key, "//button[@id='login_btn']")
     upload_to_s3(all_tests, "red_" + filename, "redcap/" + filename)
 
     driver.close()
     return all_tests
 
 
-def test_page(driver, user, passw, link, all_tests, key, btn_path):
+def res_cred(secret):
+    """Test redcap web page functionality
+
+        :param secret: Secret to
+        :param filename: name of file to store test results in
+        :return: list containing all test result dicts
+    """
+    if USER_KEY not in secret or PASSW_KEY not in secret:
+        print("Secret username and password could not be resolved")
+        raise Exception
+
+    secret = json.loads(secret)
+    return secret['pipeline-user'], secret['pipeline-passw']
+
+
+def test_page(driver, link, all_tests, key, btn_path):
     """Ensure proper, expected page is loaded for specific link and test page functionality
 
         :param driver: webdriver for Chrome page
-        :param user: username as String
-        :param passw: password as String
+        :param link: url for page being tested as String
         :param key: keyword to search for in page title
         :param all_tests: list of all test dictionaries
         :param btn_path: xpath to submit button
@@ -112,23 +123,23 @@ def test_page(driver, user, passw, link, all_tests, key, btn_path):
     if tob.get_sts(test) is 'SUCCESS':
         test = tob.new_test(key, 'sign in attempt')
         all_tests.append(test)
-        all_tests = sign_in(driver, user, passw, link, btn_path, test, all_tests)
+        all_tests = sign_in(driver, link, btn_path, test, all_tests)
 
     return all_tests
 
 
-def sign_in(driver, user, passw, link, btn_path, test, all_tests):
+def sign_in(driver, link, btn_path, test, all_tests):
     """Test sign in for page
 
         :param driver: webdriver for Chrome page
-        :param user: username as String
-        :param passw: password as String
         :param link: url for page being tested as String
         :param test: test associated with sign in
         :param all_tests: list of all test dictionaries
         :param btn_path: xpath to submit button
         :return: populated test info object
     """
+    args = parse_args()
+    user, passw = res_cred(aws.get_secret(SECRET, args.region))
 
     if "ATLAS" not in btn_path:
         tag = tob.get_tag(test)
@@ -257,23 +268,7 @@ def upload_to_s3(objs, file, path):
     with open(file, "w+") as write_file:
         json.dump(output, write_file)
 
-    upload_file(file, path)
-
-
-def upload_file(file_name, object_name=None):
-    """Upload a file to an S3 bucket
-
-        :param file_name: File to upload
-        :param object_name: Object to upload
-        :return: True if file was uploaded, else False
-    """
-
-    if object_name is None:
-        object_name = file_name
-
-    # Upload the file
-    s3_client = boto3.client('s3')
-    s3_client.upload_file(file_name, BUCKET, object_name, ExtraArgs={'ACL': 'public-read'})
+    aws.upload_file(file, BUCKET, path)
 
 
 def build_outputs(endpoint, region):
@@ -300,8 +295,6 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("endpoint", type=str, help="endpoint name for parent stack (str)")
     parser.add_argument("region", type=str, help="region deployed in (str) [default: us-east-1]", default="us-east-1")
-    parser.add_argument("user", type=str, help="username for accessing resources")
-    parser.add_argument("passw", type=str, help="password for accessing resources")
     parser.add_argument("-test", type=str, help="test being performed (str) from set {\"ohdsi\", \"redcap\"} [default: "
                         "ohdsi]", default="ohdsi")
 
@@ -312,25 +305,21 @@ def main(args):
     args = parse_args()
     filename = "test_output_" + args.region + ".json"
 
-    # exceptions occurring during testing will be caught here before exiting
+    # exceptions raised in this file will be caught here before exiting
     try:
         # perform proper test specified and print output to terminal
         if args.test == "redcap":
             output = tob.key_url("REDCap", args.endpoint, args.region)
-            print(red_test(output, args.user, args.passw, filename))
+            print(red_test(output, filename))
         elif args.test == "ohdsi":
             outputs = build_outputs(args.endpoint, args.region)
-            print(test_pages(outputs, args.user, args.passw, filename))
+            print(test_pages(outputs, filename))
         else:
             print("ERROR - Unknown test \"" + args.test + "\" (run with -h for help)")
             exit(-1)
     except EnvironmentError as ee:
         print("ERROR occurred creating cohort: ")
         print(ee)
-        exit(-1)
-    except ClientError as ce:
-        print("ERROR uploading to S3: ")
-        print(ce)
         exit(-1)
     except Exception as e:
         print(e)
