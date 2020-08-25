@@ -1,0 +1,746 @@
+AWSTemplateFormatVersion: 2010-09-09
+Parameters:
+  SourceBucketName:
+    Description: S3 Bucket Name containing clouformation template
+    Type: String
+    Default: amc-intern-test-pipeline-template-source
+  SourceTemplateName:
+    Description: Name of solution template file
+    Type: String
+    Default: 00-master-ohdsi.yaml
+  ResultBucketName:
+    Description: S3 Bucket Name containing test results and dashboard
+    Type: String
+    Default: amc-intern-test-pipeline-results
+  TestCodeRepositoryName:
+    Description: CodeCommit Repository name for containing test code
+    Type: String
+    Default: testpipelinecode
+  TestCodeRepositoryBranch:
+    Description: CodeCommit branch name
+    Type: String
+    Default: master
+  PipelineName:
+    Description: Name of the pipeline
+    Type: String
+    Default: SolutionTestPipeline
+  CodeBuildAccessSecretName:
+    Description: Name of the secret key used to perform tasks in codebuild
+    Type: String
+    Default: TestPipelineAccessKey
+Metadata:
+  'AWS::CloudFormation::Designer':
+    f13959f1-1e20-4f41-863d-fb7959c99885:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 360
+        'y': 150
+      z: 1
+      embeds: []
+    67cc1ea3-af9f-450b-8f3d-25b7a997923d:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 360
+        'y': 30
+      z: 1
+      embeds: []
+    b4492d67-e60f-4977-9cf6-398afa0a2cdc:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 720
+        'y': 150
+      z: 1
+      embeds: []
+    1ba6f0b5-3fe2-494d-a669-6156ded3f42b:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 810
+        'y': 90
+      z: 1
+      embeds: []
+    7aceb141-97be-4aef-ac25-349e6d54b7ed:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 570
+        'y': 150
+      z: 1
+      embeds: []
+    a14296dd-30a1-4971-bb96-7e832b881df7:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 570
+        'y': 270
+      z: 1
+      embeds: []
+    a582de58-1ae1-4a1a-9aeb-20ec00ce581b:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 450
+        'y': 270
+      z: 1
+      embeds: []
+    7e907ae9-f541-417c-9f07-051c42a08f44:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 450
+        'y': 30
+      z: 1
+      embeds: []
+    2496575f-47ac-4e31-8cbc-8503865d537c:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 570
+        'y': 390
+      z: 1
+      embeds: []
+    570af64c-2b04-45ad-b649-94cf3872d2bd:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 720
+        'y': 270
+      z: 1
+      embeds: []
+    18c808a5-592e-4e5c-89f4-3949fe0f3c96:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 720
+        'y': 390
+      z: 1
+      embeds: []
+    8d22fe57-556c-4f90-8b09-48840a77912d:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 450
+        'y': 390
+      z: 1
+      embeds: []
+    e3f95830-b9b4-47fe-961b-7fc4f1a1ec1e:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 570
+        'y': 30
+      z: 1
+      embeds: []
+      isassociatedwith:
+        - 7e907ae9-f541-417c-9f07-051c42a08f44
+    f3169409-27c7-4970-bc39-4f7b53d77fa7:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 240
+        'y': 150
+      z: 1
+      embeds: []
+    934f92a9-ec89-4a4b-83be-3da5ccd5c6d8:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 120
+        'y': 150
+      z: 1
+      embeds: []
+    fd5f9d51-e696-49ee-88b0-80629290f381:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 270
+        'y': 30
+      z: 1
+      embeds: []
+    55cc8f71-55cb-49f9-93ad-bd90671e20de:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 240
+        'y': 300
+      z: 1
+      embeds: []
+    14142d02-ec13-42f2-9594-49cea17d6cbf:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 1010
+        'y': 10
+      z: 1
+      embeds: []
+    bee7a191-c4fd-46c7-965e-eac2d59ce395:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 870
+        'y': 10
+      z: 1
+      embeds: []
+    52e5839e-fc93-4c81-a013-fa15405b6acf:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 900
+        'y': 90
+      z: 1
+      embeds: []
+Resources:
+  SolutionBucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: !Ref SourceBucketName
+      VersioningConfiguration:
+        Status: Enabled
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 1ba6f0b5-3fe2-494d-a669-6156ded3f42b
+  TestFileRepo:
+    Type: 'AWS::CodeCommit::Repository'
+    Properties:
+      RepositoryName: !Ref TestCodeRepositoryName
+      RepositoryDescription: a description
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 67cc1ea3-af9f-450b-8f3d-25b7a997923d
+  SolutionTestPipeline:
+    Type: 'AWS::CodePipeline::Pipeline'
+    Properties:
+      RoleArn: !GetAtt 
+        - CodePipelineRole
+        - Arn
+      Name: !Ref PipelineName
+      Stages:
+        - Name: Source
+          Actions:
+            - Name: TaskcatSource
+              ActionTypeId:
+                Category: Source
+                Owner: AWS
+                Provider: CodeCommit
+                Version: 1
+              RunOrder: 1
+              Configuration:
+                RepositoryName: !GetAtt 
+                  - TestFileRepo
+                  - Name
+                BranchName: master
+                PollForSourceChanges: false
+              OutputArtifacts:
+                - Name: TaskcatSourceOutput
+        - Name: Build
+          Actions:
+            - Name: Build
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Provider: CodeBuild
+                Version: '1'
+              RunOrder: 1
+              Configuration:
+                PrimarySource: TaskcatSourceOutput
+                ProjectName: !Ref RunTests
+              InputArtifacts:
+                - Name: TaskcatSourceOutput
+              OutputArtifacts:
+                - Name: BuildArtifact
+      ArtifactStore:
+        Type: S3
+        Location:
+          Ref: PipelineArtifactBucket
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: f13959f1-1e20-4f41-863d-fb7959c99885
+  LogBucket:
+    Type: 'AWS::S3::Bucket'
+    Properties: {}
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: b4492d67-e60f-4977-9cf6-398afa0a2cdc
+  RunTests:
+    Type: 'AWS::CodeBuild::Project'
+    Properties:
+      Name: taskcatrun
+      Description: Run TaskCat
+      ServiceRole: !GetAtt 
+        - CodeBuildRole
+        - Arn
+      Artifacts:
+        Type: CODEPIPELINE
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: 'aws/codebuild/amazonlinux2-x86_64-standard:3.0'
+      Source:
+        Type: CODEPIPELINE
+      LogsConfig:
+        CloudWatchLogs:
+          Status: ENABLED
+        S3Logs:
+          Location: !GetAtt 
+            - LogBucket
+            - Arn
+          Status: ENABLED
+      TimeoutInMinutes: 120
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 7aceb141-97be-4aef-ac25-349e6d54b7ed
+  CodePipelineRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - codepipeline.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Path: /
+      Policies:
+        - PolicyName: root
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action: '*'
+                Resource: '*'
+        - PolicyName: AWS-CodePipeline-Service-3
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'codecommit:CancelUploadArchive'
+                  - 'codecommit:GetBranch'
+                  - 'codecommit:GetCommit'
+                  - 'codecommit:GetUploadArchiveStatus'
+                  - 'codecommit:UploadArchive'
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - 'codedeploy:CreateDeployment'
+                  - 'codedeploy:GetApplicationRevision'
+                  - 'codedeploy:GetDeployment'
+                  - 'codedeploy:GetDeploymentConfig'
+                  - 'codedeploy:RegisterApplicationRevision'
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - 'codebuild:BatchGetBuilds'
+                  - 'codebuild:StartBuild'
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - 'devicefarm:ListProjects'
+                  - 'devicefarm:ListDevicePools'
+                  - 'devicefarm:GetRun'
+                  - 'devicefarm:GetUpload'
+                  - 'devicefarm:CreateUpload'
+                  - 'devicefarm:ScheduleRun'
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - 'lambda:InvokeFunction'
+                  - 'lambda:ListFunctions'
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - 'iam:PassRole'
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - 'elasticbeanstalk:*'
+                  - 'ec2:*'
+                  - 'elasticloadbalancing:*'
+                  - 'autoscaling:*'
+                  - 'cloudwatch:*'
+                  - 's3:*'
+                  - 'sns:*'
+                  - 'cloudformation:*'
+                  - 'rds:*'
+                  - 'sqs:*'
+                  - 'ecs:*'
+                Resource: '*'
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: a582de58-1ae1-4a1a-9aeb-20ec00ce581b
+  CodeBuildRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - codebuild.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Path: /
+      Policies:
+        - PolicyName: root
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action: '*'
+                Resource: '*'
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: a14296dd-30a1-4971-bb96-7e832b881df7
+  PipelineArtifactBucket:
+    Type: 'AWS::S3::Bucket'
+    Properties: {}
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 7e907ae9-f541-417c-9f07-051c42a08f44
+  CodeBuildRoleAccessKey:
+    Type: 'AWS::IAM::AccessKey'
+    Properties:
+      UserName:
+        Ref: TaskcatUser
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 2496575f-47ac-4e31-8cbc-8503865d537c
+  ResultBucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: !Ref ResultBucketName
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 570af64c-2b04-45ad-b649-94cf3872d2bd
+  CodeBuildSecretManager:
+    Type: 'AWS::SecretsManager::Secret'
+    Properties:
+      Name: !Ref CodeBuildAccessSecretName
+      Description: This secret contains the KeyId and Key for the codebuild role
+      SecretString: !Sub 
+        - '{"id":"${AccessId}","key":"${AccessKey}"}'
+        - AccessId: !Ref CodeBuildRoleAccessKey
+          AccessKey: !GetAtt CodeBuildRoleAccessKey.SecretAccessKey
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 18c808a5-592e-4e5c-89f4-3949fe0f3c96
+  TaskcatUser:
+    Type: 'AWS::IAM::User'
+    Properties:
+      Policies:
+        - PolicyName: root
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action: '*'
+                Resource: '*'
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 8d22fe57-556c-4f90-8b09-48840a77912d
+  CodePipelineArtifactStoreBucketPolicy:
+    Type: 'AWS::S3::BucketPolicy'
+    Properties:
+      Bucket: !Ref PipelineArtifactBucket
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Sid: DenyUnEncryptedObjectUploads
+            Effect: Deny
+            Principal: '*'
+            Action: 's3:PutObject'
+            Resource: !Join 
+              - ''
+              - - !GetAtt 
+                  - PipelineArtifactBucket
+                  - Arn
+                - /*
+            Condition:
+              StringNotEquals:
+                's3:x-amz-server-side-encryption': 'aws:kms'
+          - Sid: DenyInsecureConnections
+            Effect: Deny
+            Principal: '*'
+            Action: 's3:*'
+            Resource: !Join 
+              - ''
+              - - !GetAtt 
+                  - PipelineArtifactBucket
+                  - Arn
+                - /*
+            Condition:
+              Bool:
+                'aws:SecureTransport': false
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: e3f95830-b9b4-47fe-961b-7fc4f1a1ec1e
+  AmazonCloudWatchEventRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - events.amazonaws.com
+            Action: 'sts:AssumeRole'
+      Path: /
+      Policies:
+        - PolicyName: cwe-pipeline-execution
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action: 'codepipeline:StartPipelineExecution'
+                Resource: !Join 
+                  - ''
+                  - - 'arn:aws:codepipeline:'
+                    - !Ref 'AWS::Region'
+                    - ':'
+                    - !Ref 'AWS::AccountId'
+                    - ':'
+                    - !Ref SolutionTestPipeline
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: f3169409-27c7-4970-bc39-4f7b53d77fa7
+  S3EventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      EventPattern:
+        source:
+          - aws.s3
+        detail-type:
+          - AWS API Call via CloudTrail
+        detail:
+          eventSource:
+            - s3.amazonaws.com
+          eventName:
+            - PutObject
+            - CompleteMultipartUpload
+          resources:
+            ARN:
+              - !Join 
+                - ''
+                - - !GetAtt SolutionBucket.Arn
+                  - /
+                  - !Ref SourceTemplateName
+      Targets:
+        - Arn: !Join 
+            - ''
+            - - 'arn:aws:codepipeline:'
+              - !Ref 'AWS::Region'
+              - ':'
+              - !Ref 'AWS::AccountId'
+              - ':'
+              - !Ref SolutionTestPipeline
+          RoleArn: !GetAtt AmazonCloudWatchEventRole.Arn
+          Id: codepipeline-SolutionTestPipeline
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 934f92a9-ec89-4a4b-83be-3da5ccd5c6d8
+  CodeCommitEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      EventPattern:
+        source:
+          - aws.codecommit
+        detail-type:
+          - CodeCommit Repository State Change
+        resources:
+          - !Join 
+            - ''
+            - - 'arn:aws:codecommit:'
+              - !Ref 'AWS::Region'
+              - ':'
+              - !Ref 'AWS::AccountId'
+              - ':'
+              - !Ref TestCodeRepositoryName
+        detail:
+          event:
+            - referenceCreated
+            - referenceUpdated
+          referenceType:
+            - branch
+          referenceName:
+            - !Ref TestCodeRepositoryBranch
+      Targets:
+        - Arn: !Join 
+            - ''
+            - - 'arn:aws:codepipeline:'
+              - !Ref 'AWS::Region'
+              - ':'
+              - !Ref 'AWS::AccountId'
+              - ':'
+              - !Ref SolutionTestPipeline
+          RoleArn: !GetAtt AmazonCloudWatchEventRole.Arn
+          Id: codepipeline-SolutionTestPipeline
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: fd5f9d51-e696-49ee-88b0-80629290f381
+  ScheduleEventRule:
+    Type: 'AWS::Events::Rule'
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 55cc8f71-55cb-49f9-93ad-bd90671e20de
+    Properties:
+      ScheduleExpression: cron(59 21 ? * FRI *)
+      Targets:
+        - Arn: !Join 
+            - ''
+            - - 'arn:aws:codepipeline:'
+              - !Ref 'AWS::Region'
+              - ':'
+              - !Ref 'AWS::AccountId'
+              - ':'
+              - !Ref SolutionTestPipeline
+          RoleArn: !GetAtt AmazonCloudWatchEventRole.Arn
+          Id: codepipeline-SolutionTestPipeline
+  cleanupBucketOnDeleteLambda:
+    Type: 'AWS::Lambda::Function'
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 14142d02-ec13-42f2-9594-49cea17d6cbf
+    Properties:
+      Code:
+        ZipFile: !Sub |
+          #!/usr/bin/env python
+          # -*- coding: utf-8 -*-
+
+          import json
+          import boto3
+          from botocore.vendored import requests
+
+
+          def lambda_handler(event, context):
+              try:
+                  bucket = event['ResourceProperties']['BucketName']
+
+                  if event['RequestType'] == 'Delete':
+                      s3 = boto3.resource('s3')
+                      bucket = s3.Bucket(bucket)
+                      for obj in bucket.objects.filter():
+                          s3.Object(bucket.name, obj.key).delete()
+
+                  sendResponseCfn(event, context, "SUCCESS")
+              except Exception as e:
+                  print(e)
+                  sendResponseCfn(event, context, "FAILED")
+
+
+          def sendResponseCfn(event, context, responseStatus):
+              response_body = {'Status': responseStatus,
+                               'Reason': 'Log stream name: ' + context.log_stream_name,
+                               'PhysicalResourceId': context.log_stream_name,
+                               'StackId': event['StackId'],
+                               'RequestId': event['RequestId'],
+                               'LogicalResourceId': event['LogicalResourceId'],
+                               'Data': json.loads("{}")}
+
+              requests.put(event['ResponseURL'], data=json.dumps(response_body))
+      Description: cleanup Bucket on Delete Lambda Lambda function.
+      Handler: index.lambda_handler
+      Role: !GetAtt cleanupBucketOnDeleteLambdaRole.Arn
+      Runtime: python2.7
+      Timeout: 60
+  cleanupBucketOnDeleteLambdaRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Path: /
+      Policies:
+        - PolicyName: root
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action: '*'
+                Resource: '*'
+        - PolicyName: AWS-CodePipeline-Service-3
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'logs:*'
+                  - 's3:*'
+                Resource: '*'
+              - Effect: Deny
+                Action:
+                  - 's3:DeleteBucket'
+                Resource: '*'
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: bee7a191-c4fd-46c7-965e-eac2d59ce395
+  cleanupBucketOnDelete1:
+    Type: 'Custom::cleanupbucket'
+    Properties:
+      ServiceToken: !GetAtt 
+        - cleanupBucketOnDeleteLambda
+        - Arn
+      BucketName: !Ref PipelineArtifactBucket
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 52e5839e-fc93-4c81-a013-fa15405b6acf
+  cleanupBucketOnDelete2:
+    Type: 'Custom::cleanupbucket'
+    Properties:
+      ServiceToken: !GetAtt 
+        - cleanupBucketOnDeleteLambda
+        - Arn
+      BucketName: !Ref SolutionBucket
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 52e5839e-fc93-4c81-a013-fa15405b6acf
+  cleanupBucketOnDelete3:
+    Type: 'Custom::cleanupbucket'
+    Properties:
+      ServiceToken: !GetAtt 
+        - cleanupBucketOnDeleteLambda
+        - Arn
+      BucketName: !Ref LogBucket
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 52e5839e-fc93-4c81-a013-fa15405b6acf
+  cleanupBucketOnDelete4:
+    Type: 'Custom::cleanupbucket'
+    Properties:
+      ServiceToken: !GetAtt 
+        - cleanupBucketOnDeleteLambda
+        - Arn
+      BucketName: !Ref ResultBucket
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 52e5839e-fc93-4c81-a013-fa15405b6acf
