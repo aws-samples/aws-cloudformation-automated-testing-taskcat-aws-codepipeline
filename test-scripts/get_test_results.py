@@ -6,7 +6,10 @@ import json
 
 region = sys.argv[1]
 folder = sys.argv[2]
-test_log_file = 'test_output_' + region + '.json'
+topic_arn = sys.argv[3]
+result_bucket = system.argv[4]
+
+test_log_file = 'test-scripts/test_output_' + region + '.json'
 
 with open('taskcat_outputs/index.html') as fp:
 	soup = BeautifulSoup(fp, 'html.parser')
@@ -36,13 +39,13 @@ with open('taskcat_outputs/index.html') as fp:
 				print("FAILURE found")
 				client = boto3.client('sns')
 				response = client.publish(
-					TopicArn = 'SNS_TOPIC_ARN_HERE',
-					Message = test["message"] + "\n Extra information: \n" + json.dumps(test["extra"]) + "\n Dashboard: \n https://RESULT_BUCKET_NAME_HERE.s3.amazonaws.com/index2.html" ,
+					TopicArn = topic_arn,
+					Message = test["message"] + "\n Extra information: \n" + json.dumps(test["extra"]) + "\n Dashboard: \n https://" + result_bucket +".s3.amazonaws.com/index2.html" ,
 					Subject = 'Clouformation Testing Pipeline Internal Test Failure'
 				)
 			new_test_result.string = test_results
 			new_logs = soup.new_tag("td", attrs={"class": "test-left"})
-			new_link = soup.new_tag("a", href = "https://RESULT_BUCKET_NAME_HERE.s3.amazonaws.com/" + folder + "/" + test_log_file)
+			new_link = soup.new_tag("a", href = "https://" + result_bucket + ".s3.amazonaws.com/" + folder + "/" + test_log_file)
 			new_link.string = "View Logs"
 			new_logs.append(new_link)
 
