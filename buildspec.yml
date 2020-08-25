@@ -44,7 +44,7 @@ phases:
       - cd $CODEBUILD_SRC_DIR
       - pip3 install taskcat
       - mkdir templates
-      - aws s3 cp s3://$SOURCE_BUCKET/$TEMPLATE_NAME templates/TEMPLATE_NAME
+      - aws s3 cp s3://$SOURCE_BUCKET/$TEMPLATE_NAME templates/$TEMPLATE_NAME
   build:
     commands:
       - echo Build phase started on `date`
