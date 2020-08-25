@@ -44,12 +44,12 @@ phases:
       # - taskcat --debug test run
       - taskcat test run --no-delete
       - taskcat test list
-      - python3 tests.py ohdsi-test-pipeline-01 us-east-1
+      - python3 test-scripts/tests.py ohdsi-test-pipeline-01 us-east-1
       - ls
   post_build:
     commands:
       - echo post build phase started on `date`;
       # Delete the stack if all tests ran successfully
       # - if [ $CODEBUILD_BUILD_SUCCEEDING -eq 1 ]; then python3 getTestResults.py; taskcat test clean ALL; fi
-      - python3 get_test_results.py us-east-1 odshi-on-aws
+      - python3 test-scripts/get_test_results.py us-east-1 odshi-on-aws
       - aws s3 cp --recursive --acl public-read ./taskcat_outputs s3://RESULT-BUCKET-NAME-HERE
