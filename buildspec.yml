@@ -4,6 +4,7 @@ env:
     RESULT_BUCKET: RESULT-BUCKET-NAME-HERE
     SOURCE_BUCKET: SOURCE-BUCKET-NAME-HERE
     TEMPLATE_NAME: TEMPLATE-NAME-HERE
+    TOPIC_ARN: TOPIC-ARN_HERE
     # SOURCE_BUCKET: ohdsi-rstudio
     # TEMPLATE_NAME: 00-master-ohdsi.yaml
   secrets-manager:
@@ -57,5 +58,5 @@ phases:
       - echo post build phase started on `date`;
       # Delete the stack if all tests ran successfully
       # - if [ $CODEBUILD_BUILD_SUCCEEDING -eq 1 ]; then python3 getTestResults.py; taskcat test clean ALL; fi
-      - python3 test-scripts/get_test_results.py us-east-1 odshi-on-aws
+      - python3 test-scripts/get_test_results.py us-east-1 odshi-on-aws $TOPIC_ARN $RESULT_BUCKET
       - aws s3 cp --recursive --acl public-read ./taskcat_outputs s3://$RESULT_BUCKET
