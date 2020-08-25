@@ -23,8 +23,8 @@ tests:
     parameters:
       # EC2 Key Pair not created with CloudFormation. Manually create one in the regions you want to test.
       EC2KeyName: ohdsitestpair
-      # EBEndpoint: sa-intern-project-ohdsi-test-pipeline
       EBEndpoint: ohdsi-test-pipeline-01
+      # DatabaseMasterPassword value must have a length of 8-41 and have at least 1 uppercase, 1 lowercase, 1 number, and optionally include these special characters ~#%^*_+,-
       DatabaseMasterPassword: DATABASE_PASSWORD_HERE
       RStudioUserList: USERNAME_HERE,PASSWORD_HERE
       ExampleStudies: "true"
