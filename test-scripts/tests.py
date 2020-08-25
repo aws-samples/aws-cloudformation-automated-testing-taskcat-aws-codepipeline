@@ -5,7 +5,7 @@
     The tests check that the webpages can be accessed, profiles can be signed into, and for OHDSI that a cohort
     can be created in ATLAS.
 
-    usage: python3 tests.py <endpoint> <region> <username> <password> -test=<test>
+    usage: python3 tests.py <endpoint> <region> -test=<test>
 """
 
 import argparse
