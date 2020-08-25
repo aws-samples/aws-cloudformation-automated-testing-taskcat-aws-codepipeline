@@ -212,6 +212,14 @@ Metadata:
         'y': 90
       z: 1
       embeds: []
+    acc9290b-9b88-4b39-b487-facc90a029c4:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 860
+        'y': 230
+      z: 0
 Resources:
   SolutionBucket:
     Type: 'AWS::S3::Bucket'
@@ -744,3 +752,9 @@ Resources:
     Metadata:
       'AWS::CloudFormation::Designer':
         id: 52e5839e-fc93-4c81-a013-fa15405b6acf
+  TestErrorNotification:
+    Type: 'AWS::SNS::Topic'
+    Properties: {}
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: acc9290b-9b88-4b39-b487-facc90a029c4
