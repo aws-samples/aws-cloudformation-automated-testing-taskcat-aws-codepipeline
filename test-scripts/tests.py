@@ -5,7 +5,7 @@
     The tests check that the webpages can be accessed, profiles can be signed into, and for OHDSI that a cohort
     can be created in ATLAS.
 
-    usage: python3 tests.py <endpoint> <region> -test=<test>
+    usage: python3 tests.py <endpoint> <region> <username> <password> <bucket> -test=<test>
 """
 
 import argparse
@@ -18,10 +18,9 @@ import web_interact as wi
 import test_objects as tob
 from datetime import datetime
 
-BUCKET = "solutions-test-output"
-USER_KEY = "pipeline-user"
-PASSW_KEY = "pipeline-passw"
-SECRET = "pipeline-user-credentials"
+BUCKET = ""
+USER = ""
+PASSW = ""
 
 
 def test_pages(outputs, filename):
@@ -78,21 +77,6 @@ def red_test(output, filename):
     return all_tests
 
 
-def res_cred(secret):
-    """Test redcap web page functionality
-
-        :param secret: Secret to
-        :param filename: name of file to store test results in
-        :return: list containing all test result dicts
-    """
-    if USER_KEY not in secret or PASSW_KEY not in secret:
-        print("Secret username and password could not be resolved")
-        raise Exception
-
-    secret = json.loads(secret)
-    return secret['pipeline-user'], secret['pipeline-passw']
-
-
 def test_page(driver, link, all_tests, key, btn_path):
     """Ensure proper, expected page is loaded for specific link and test page functionality
 
@@ -138,22 +122,20 @@ def sign_in(driver, link, btn_path, test, all_tests):
         :param btn_path: xpath to submit button
         :return: populated test info object
     """
-    args = parse_args()
-    user, passw = res_cred(aws.get_secret(SECRET, args.region))
 
     if "ATLAS" not in btn_path:
         tag = tob.get_tag(test)
         if "Jupyter" in tag:
             tag = tag + "Lab"
-        test = tob.resolve_sts(test, wi.log_in(driver, user, passw, link, btn_path, tag))
+        test = tob.resolve_sts(test, wi.log_in(driver, USER, PASSW, link, btn_path, tag))
         # perform second sign in attempt if first fails
         if tob.get_sts(test) == 'FAILURE':
-            test = tob.resolve_sts(test, wi.log_in(driver, user, passw, link, btn_path, tag))
+            test = tob.resolve_sts(test, wi.log_in(driver, USER, PASSW, link, btn_path, tag))
         test = tob.add_response(test, link, driver)
         all_tests.pop()
         all_tests.append(test)
     else:
-        all_tests = atlas_test(user, passw, link, all_tests, test)
+        all_tests = atlas_test(USER, PASSW, link, all_tests, test)
 
     return all_tests
 
@@ -295,6 +277,9 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("endpoint", type=str, help="endpoint name for parent stack (str)")
     parser.add_argument("region", type=str, help="region deployed in (str) [default: us-east-1]", default="us-east-1")
+    parser.add_argument("user", type=str, help="username for accessing resources")
+    parser.add_argument("passw", type=str, help="password for accessing resources")
+    parser.add_argument("bucket", type=str, help="name of S3 bucket fot storing test results")
     parser.add_argument("-test", type=str, help="test being performed (str) from set {\"ohdsi\", \"redcap\"} [default: "
                         "ohdsi]", default="ohdsi")
 
@@ -303,6 +288,15 @@ def parse_args():
 
 def main(args):
     args = parse_args()
+
+    # set global values here, not to be altered elsewhere
+    global USER
+    global PASSW
+    USER = args.user
+    PASSW = args.passw
+
+    global BUCKET
+    BUCKET = args.bucket
     filename = "test_output_" + args.region + ".json"
 
     # exceptions raised in this file will be caught here before exiting
