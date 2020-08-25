@@ -9,6 +9,8 @@ env:
   secrets-manager:
     AWSid: TestPipelineAccessKey:id
     AWSkey: TestPipelineAccessKey:key
+    USER: SECRET-NAME-HERE:USERNAME-KEY-HERE
+    PASSW: SECRET-NAME-HERE:PASSWORD-KEY-HERE
 phases:
   install:
     runtime-versions:
@@ -48,7 +50,7 @@ phases:
       # - taskcat --debug test run
       - taskcat test run --no-delete
       - taskcat test list
-      - python3 test-scripts/tests.py ohdsi-test-pipeline-01 us-east-1
+      - python3 test-scripts/tests.py ohdsi-test-pipeline-01 us-east-1 $USER $PASSW $RESULT_BUCKET
       - ls
   post_build:
     commands:
