@@ -1,0 +1,58 @@
+project:
+  owner: EMAIL@HERE.com
+  name: pipeline-prototype
+  regions:
+    - ap-northeast-1
+    - ap-northeast-2
+    - ap-south-1
+    - ap-southeast-1
+    - ap-southeast-2
+    - ca-central-1
+    - eu-central-1
+    - eu-west-1
+    - eu-west-2
+    - sa-east-1
+    - us-east-1
+    - us-east-2
+    - us-west-1
+    - us-west-2
+  # OPTIONAL: create a bucket for taskcat to use if you don't want it to generate a new one everytime it is run
+  # s3_bucket: "TASKCAT-BUCKET-HERE"
+tests:
+  ohdsionaws-CloudFormation-Launch-us-east-1:
+    parameters:
+      # EC2 Key Pair not created with CloudFormation. Manually create one in the regions you want to test.
+      EC2KeyName: ohdsitestpair
+      # EBEndpoint: sa-intern-project-ohdsi-test-pipeline
+      EBEndpoint: ohdsi-test-pipeline-01
+      DatabaseMasterPassword: DATABASE_PASSWORD_HERE
+      RStudioUserList: USERNAME_HERE,PASSWORD_HERE
+      ExampleStudies: "true"
+      AtlasSecurity: "true"
+      UseACMBoolean: "false"
+      UseRoute53Boolean: "false"
+      HostedZoneId: ""
+      HostedZoneName: ""
+      DomainName: ""
+    template: ./templates/00-master-ohdsi.yaml
+    regions:
+    - us-east-1
+
+  # Add more tests to test in more regions
+
+  # test-scenario2:
+  #   parameters:
+  #     EC2KeyName: ohdsitestpair
+  #     EBEndpoint: sa-intern-project-ohdsi-test-pipeline-2
+  #     DatabaseMasterPassword: DATABASE_PASSWORD_HERE
+  #     RStudioUserList: USERNAME_HERE,PASSWORD_HERE
+  #     ExampleStudies: "true"
+  #     AtlasSecurity: "true"
+  #     UseACMBoolean: "false"
+  #     UseRoute53Boolean: "false"
+  #     HostedZoneId: ""
+  #     HostedZoneName: ""
+  #     DomainName: ""
+  #   template: ./templates/00-master-ohdsi.yaml
+  #   regions:
+  #   - us-west-1
