@@ -1,5 +1,11 @@
 version: 0.2
 env:
+  variables:
+    RESULT_BUCKET: RESULT-BUCKET-NAME-HERE
+    SOURCE_BUCKET: SOURCE-BUCKET-NAME-HERE
+    TEMPLATE_NAME: TEMPLATE-NAME-HERE
+    # SOURCE_BUCKET: ohdsi-rstudio
+    # TEMPLATE_NAME: 00-master-ohdsi.yaml
   secrets-manager:
     AWSid: TestPipelineAccessKey:id
     AWSkey: TestPipelineAccessKey:key
@@ -34,9 +40,7 @@ phases:
       - cd $CODEBUILD_SRC_DIR
       - pip3 install taskcat
       - mkdir templates
-      # Grab the template we want to test and put it under the template folder. Replace ODHSI with the commented line below
-      # - aws s3 cp s3://SOURCE-BUCKET-NAME-HERE/TEMPLATE-NAME-HERE.yaml templates/TEMPLATE-NAME-HERE.yaml
-      - aws s3 cp s3://ohdsi-rstudio/00-master-ohdsi.yaml templates/00-master-ohdsi.yaml
+      - aws s3 cp s3://$SOURCE_BUCKET/$TEMPLATE_NAME templates/TEMPLATE_NAME
   build:
     commands:
       - echo Build phase started on `date`
@@ -52,4 +56,4 @@ phases:
       # Delete the stack if all tests ran successfully
       # - if [ $CODEBUILD_BUILD_SUCCEEDING -eq 1 ]; then python3 getTestResults.py; taskcat test clean ALL; fi
       - python3 test-scripts/get_test_results.py us-east-1 odshi-on-aws
-      - aws s3 cp --recursive --acl public-read ./taskcat_outputs s3://RESULT-BUCKET-NAME-HERE
+      - aws s3 cp --recursive --acl public-read ./taskcat_outputs s3://$RESULT_BUCKET
