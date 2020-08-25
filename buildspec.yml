@@ -2,11 +2,12 @@ version: 0.2
 env:
   variables:
     RESULT_BUCKET: RESULT-BUCKET-NAME-HERE
+    # SOURCE_BUCKET: ohdsi-rstudio
+    # TEMPLATE_NAME: 00-master-ohdsi.yaml
     SOURCE_BUCKET: SOURCE-BUCKET-NAME-HERE
     TEMPLATE_NAME: TEMPLATE-NAME-HERE
     TOPIC_ARN: TOPIC-ARN_HERE
-    # SOURCE_BUCKET: ohdsi-rstudio
-    # TEMPLATE_NAME: 00-master-ohdsi.yaml
+
   secrets-manager:
     AWSid: TestPipelineAccessKey:id
     AWSkey: TestPipelineAccessKey:key
