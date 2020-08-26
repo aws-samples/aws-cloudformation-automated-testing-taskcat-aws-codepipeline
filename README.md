@@ -118,7 +118,7 @@ i. Replace the RESULT_BUCKET variable placeholder with the ResultBucketName para
 ii. Replace the SOURCE_BUCKET variable placeholder with the SourceBucketName parameter value chosen\
 iii. Replace the TEMPLATE_NAME variable placeholder with the desired CloudFormation template to be tested (e.g. 00-master-ohdsi.yaml)\
 iv. Replace the TOPIC_ARN variable placeholder with the ARN for the created SNS topic\
-v. Replace the USER secrets-manager placeholder values with the secret name and username key you created in step 1.\
+v. Replace the USER secrets-manager placeholder values with the secret name and username key you created in step 1 (eg. secret-name:userkey).\
 vi. Replace the PASSW secrets-manager placeholder values with the secret name and password key you created in step 1.\
 vii. Replace the REGION and/or EB_ENDPOINT to match the test scenario parameters you entered for the taskcat.yml
 
