@@ -7,6 +7,12 @@ env:
     SOURCE_BUCKET: SOURCE-BUCKET-NAME-HERE
     TEMPLATE_NAME: TEMPLATE-NAME-HERE
     TOPIC_ARN: TOPIC-ARN_HERE
+    # These parameter is specifc to the test script
+    # If testing multiple regions add another
+    # - python3 test-scripts/tests.py $EB_ENDPOINT us-east-1 $USER $PASSW $RESULT_BUCKET
+    # command in the build section
+    EB_ENDPOINT: OHDSI-EB-ENPOINT-HERE
+    REGION: REGION-TO-TEST-HERE
 
   secrets-manager:
     AWSid: TestPipelineAccessKey:id
@@ -52,12 +58,12 @@ phases:
       # - taskcat --debug test run
       - taskcat test run --no-delete
       - taskcat test list
-      - python3 test-scripts/tests.py ohdsi-test-pipeline-01 us-east-1 $USER $PASSW $RESULT_BUCKET
+      - python3 test-scripts/tests.py $EB_ENDPOINT $REGION $USER $PASSW $RESULT_BUCKET
       - ls
   post_build:
     commands:
       - echo post build phase started on `date`;
       # Delete the stack if all tests ran successfully
       # - if [ $CODEBUILD_BUILD_SUCCEEDING -eq 1 ]; then python3 getTestResults.py; taskcat test clean ALL; fi
-      - python3 test-scripts/get_test_results.py us-east-1 odshi-on-aws $TOPIC_ARN $RESULT_BUCKET
+      - python3 test-scripts/get_test_results.py $REGION odshi-on-aws $TOPIC_ARN $RESULT_BUCKET
       - aws s3 cp --recursive --acl public-read ./taskcat_outputs s3://$RESULT_BUCKET
