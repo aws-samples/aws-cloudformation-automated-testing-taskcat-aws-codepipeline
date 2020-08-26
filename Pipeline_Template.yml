@@ -24,10 +24,6 @@ Parameters:
     Description: Name of the pipeline
     Type: String
     Default: SolutionTestPipeline
-  CodeBuildAccessSecretName:
-    Description: Name of the secret key used to perform tasks in codebuild
-    Type: String
-    Default: TestPipelineAccessKey
 Metadata:
   'AWS::CloudFormation::Designer':
     f13959f1-1e20-4f41-863d-fb7959c99885:
@@ -447,7 +443,6 @@ Resources:
   CodeBuildSecretManager:
     Type: 'AWS::SecretsManager::Secret'
     Properties:
-      Name: !Ref CodeBuildAccessSecretName
       Description: This secret contains the KeyId and Key for the codebuild role
       SecretString: !Sub 
         - '{"id":"${AccessId}","key":"${AccessKey}"}'

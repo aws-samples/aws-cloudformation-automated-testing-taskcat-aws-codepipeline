@@ -77,7 +77,8 @@ Be sure to complete all prerequisite tasks before beginning deployment and all p
 ##### Begin deployment
 
 1. Begin the deployment process by clicking the **Launch Stack** button at the top of this page. This will take you to the [CloudFormation Manage Console](https://console.aws.amazon.com/cloudformation/) and specify the Automated Testing Pipeline CloudFormation template.  Then click the **Next** button in the lower-right corner. 
-2. The next screen will take in all of the parameters for your pipeline environment.  A description is provided for each parameter to help explain its function, but following is also a detailed description of how to use each parameter.  At the top, provide a unique **Stack Name**.    
+	* You can also launch the CloudFormation Template by downloading the Pipeline_Template.yml from this repository and launching a stack with new resources.
+2. The next screen will take in all of the parameters for your pipeline environment.  A description is provided for each parameter to help explain its function, but following is also a detailed description of how to use each parameter.  At the top, provide a unique **Stack Name**. The ResultBucketName and SourceBucketName will be used to modify the code later on.
 
 ##### General AWS parameters
 |Parameter Name| Description|
@@ -99,7 +100,7 @@ Be sure to complete all prerequisite tasks before beginning deployment and all p
 *5. You can watch as CloudFormation builds out your pipeline environment. A CloudFormation deployment is called a *stack*. The parent stack creates several child stacks depending on the parameters you provided.  When all the stacks have reached the green CREATE_COMPLETE status, then the pipeline architecture has been deployed.*
 
 ##### Post-Deployment Tasks to Begin Testing 
-1. [Create a secret](https://docs.aws.amazon.com/secretsmanager/latest/userguide/tutorials_basic.html) containing a username and password to be used for testing OHSDI-on-AWS or REDCap. If you are testing REDCap, make the username value ‘redcap_admin’. 
+1. [Create a secret](https://docs.aws.amazon.com/secretsmanager/latest/userguide/tutorials_basic.html) containing a username and password to be used for testing OHSDI-on-AWS or REDCap. The secret name and keys will be used to modify the code later on.
 ![alt-text](https://github.com/aws-samples/aws-cloudformation-automated-testing-taskcat-aws-codepipeline/blob/master/images/secret-creation.png)
 
 2. [Subscribe to the SNS topic](https://docs.amazonaws.cn/en_us/sns/latest/dg/sns-tutorial-create-subscribe-endpoint-to-topic.html) that was automatically created during deployment. 
@@ -109,8 +110,8 @@ Be sure to complete all prerequisite tasks before beginning deployment and all p
 4. Make the following changes in the .taskcat.yml file:\
 i. Update the [EC2KeyName value](https://github.com/aws-samples/aws-cloudformation-automated-testing-taskcat-aws-codepipeline/blob/0f5bfaf203532f88386f4d5d0450d23d42c9239b/.taskcat.yml#L25) under test-scenario-1 to match the created EC2KeyPair name.\
 ii. Replace the [DatabaseMasterPassword placeholder](https://github.com/aws-samples/aws-cloudformation-automated-testing-taskcat-aws-codepipeline/blob/901407a079099d7f7061b47f1cc005c6023f4a93/.taskcat.yml#L28) value with a desired password value. Follow the instructions in the [comment](https://github.com/aws-samples/aws-cloudformation-automated-testing-taskcat-aws-codepipeline/blob/901407a079099d7f7061b47f1cc005c6023f4a93/.taskcat.yml#L27) describing how to create a valid password value.\
-iii. Replace the [RStudioUserList placeholder](https://github.com/aws-samples/aws-cloudformation-automated-testing-taskcat-aws-codepipeline/blob/901407a079099d7f7061b47f1cc005c6023f4a93/.taskcat.yml#L29) values with the username and password you stored in secrets manager.\
-iv. Replace the [](https://github.com/aws-samples/aws-cloudformation-automated-testing-taskcat-aws-codepipeline/blob/58f21e57a8f06599199087bd0617f2867c39723d/.taskcat.yml#L27)[EBEndpoint value](https://github.com/aws-samples/aws-cloudformation-automated-testing-taskcat-aws-codepipeline/blob/901407a079099d7f7061b47f1cc005c6023f4a93/.taskcat.yml#L26) with a unique ElasticBeanstalk endpoint name.\
+iii. Replace the [RStudioUserList placeholder](https://github.com/aws-samples/aws-cloudformation-automated-testing-taskcat-aws-codepipeline/blob/901407a079099d7f7061b47f1cc005c6023f4a93/.taskcat.yml#L29) values with the username and password you stored in secrets manager (eg. secret-name:KEYNAME).\
+iv. Replace the [](https://github.com/aws-samples/aws-cloudformation-automated-testing-taskcat-aws-codepipeline/blob/58f21e57a8f06599199087bd0617f2867c39723d/.taskcat.yml#L27)[EBEndpoint value](https://github.com/aws-samples/aws-cloudformation-automated-testing-taskcat-aws-codepipeline/blob/901407a079099d7f7061b47f1cc005c6023f4a93/.taskcat.yml#L26) with a unique ElasticBeanstalk endpoint name. This ElasticBenstalk endpoint name will be used to modify code later on.\
 v (Optional). Change the [region to deploy the template in](https://github.com/aws-samples/aws-cloudformation-automated-testing-taskcat-aws-codepipeline/blob/901407a079099d7f7061b47f1cc005c6023f4a93/.taskcat.yml#L39) to your desired region.
 
 5. Make the following changes to the [environment in the buildspec.yml](https://github.com/aws-samples/aws-cloudformation-automated-testing-taskcat-aws-codepipeline/blob/901407a079099d7f7061b47f1cc005c6023f4a93/buildspec.yml#L2) file:\
@@ -122,10 +123,10 @@ v. Replace the USER secrets-manager placeholder values with the secret name and 
 vi. Replace the PASSW secrets-manager placeholder values with the secret name and password key you created in step 1.\
 vii. Replace the REGION and/or EB_ENDPOINT to match the test scenario parameters you entered for the taskcat.yml
 
-6. Set a new origin for the cloned repository to the newly created CodeCommit repository using the following command:
+6. Go to CodeCommit repositorySet a new origin for the cloned repository to the newly created CodeCommit repository using the following command:
 
 ```
-git remote set-url origin codecommit-url-here
+git remote set-url origin CODECOMMIT_URL_HERE
 ```
 
 7. Pushing to CodeCommit will automatically activate the Pipeline. You can monitor the testing through the CodeBuild Logs.
