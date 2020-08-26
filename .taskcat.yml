@@ -19,7 +19,7 @@ project:
   # OPTIONAL: create a bucket for taskcat to use if you don't want it to generate a new one everytime it is run
   # s3_bucket: "TASKCAT-BUCKET-HERE"
 tests:
-  ohdsionaws-CloudFormation-Launch-us-east-1:
+  test-scenario-1:
     parameters:
       # EC2 Key Pair not created with CloudFormation. Manually create one in the regions you want to test.
       EC2KeyName: ohdsitestpair
@@ -40,7 +40,7 @@ tests:
 
   # Add more tests to test in more regions
 
-  # test-scenario2:
+  # test-scenario-2:
   #   parameters:
   #     EC2KeyName: ohdsitestpair
   #     EBEndpoint: sa-intern-project-ohdsi-test-pipeline-2
