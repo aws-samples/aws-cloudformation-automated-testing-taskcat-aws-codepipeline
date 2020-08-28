@@ -58,6 +58,7 @@ phases:
       # - taskcat --debug test run
       - taskcat test run --no-delete
       - taskcat test list
+      - sleep 120
       - python3 test-scripts/tests.py $EB_ENDPOINT $REGION $USERN $PASSW $RESULT_BUCKET
       - ls
   post_build:
