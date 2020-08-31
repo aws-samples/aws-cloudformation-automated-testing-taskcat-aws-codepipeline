@@ -107,19 +107,19 @@ Be sure to complete all prerequisite tasks before beginning deployment and all p
 
 3. Skip this step if you are testing OHDSI-on-AWS. Upload the CloudFormation template to be tested to the S3 bucket created with the parameter SourceBucketName.
 
-4. Make the following changes in the .taskcat.yml file:\
-- [ ] Update the [EC2KeyName value](https://github.com/aws-samples/aws-cloudformation-automated-testing-taskcat-aws-codepipeline/blob/0f5bfaf203532f88386f4d5d0450d23d42c9239b/.taskcat.yml#L25) under test-scenario-1 to match the created EC2KeyPair name.\
-- [ ] Replace the [DatabaseMasterPassword placeholder](https://github.com/aws-samples/aws-cloudformation-automated-testing-taskcat-aws-codepipeline/blob/901407a079099d7f7061b47f1cc005c6023f4a93/.taskcat.yml#L28) value with a desired password value. Follow the instructions in the [comment](https://github.com/aws-samples/aws-cloudformation-automated-testing-taskcat-aws-codepipeline/blob/901407a079099d7f7061b47f1cc005c6023f4a93/.taskcat.yml#L27) describing how to create a valid password value.\
-- [ ] Replace the [](https://github.com/aws-samples/aws-cloudformation-automated-testing-taskcat-aws-codepipeline/blob/58f21e57a8f06599199087bd0617f2867c39723d/.taskcat.yml#L27)[EBEndpoint value](https://github.com/aws-samples/aws-cloudformation-automated-testing-taskcat-aws-codepipeline/blob/901407a079099d7f7061b47f1cc005c6023f4a93/.taskcat.yml#L26) with a unique ElasticBeanstalk endpoint name. This ElasticBenstalk endpoint name will be used to modify code later on.\
+4. Make the following changes in the .taskcat.yml file:
+- [ ] Update the [EC2KeyName value](https://github.com/aws-samples/aws-cloudformation-automated-testing-taskcat-aws-codepipeline/blob/0f5bfaf203532f88386f4d5d0450d23d42c9239b/.taskcat.yml#L25) under test-scenario-1 to match the created EC2KeyPair name.
+- [ ] Replace the [DatabaseMasterPassword placeholder](https://github.com/aws-samples/aws-cloudformation-automated-testing-taskcat-aws-codepipeline/blob/901407a079099d7f7061b47f1cc005c6023f4a93/.taskcat.yml#L28) value with a desired password value. Follow the instructions in the [comment](https://github.com/aws-samples/aws-cloudformation-automated-testing-taskcat-aws-codepipeline/blob/901407a079099d7f7061b47f1cc005c6023f4a93/.taskcat.yml#L27) describing how to create a valid password value.
+- [ ] Replace the [](https://github.com/aws-samples/aws-cloudformation-automated-testing-taskcat-aws-codepipeline/blob/58f21e57a8f06599199087bd0617f2867c39723d/.taskcat.yml#L27)[EBEndpoint value](https://github.com/aws-samples/aws-cloudformation-automated-testing-taskcat-aws-codepipeline/blob/901407a079099d7f7061b47f1cc005c6023f4a93/.taskcat.yml#L26) with a unique ElasticBeanstalk endpoint name. This ElasticBenstalk endpoint name will be used to modify code later on.
 - [ ] (Optional). Change the [region to deploy the template in](https://github.com/aws-samples/aws-cloudformation-automated-testing-taskcat-aws-codepipeline/blob/901407a079099d7f7061b47f1cc005c6023f4a93/.taskcat.yml#L39) to your desired region.
 
-5. Make the following changes to the [environment in the buildspec.yml](https://github.com/aws-samples/aws-cloudformation-automated-testing-taskcat-aws-codepipeline/blob/901407a079099d7f7061b47f1cc005c6023f4a93/buildspec.yml#L2) file:\
-- [ ] Replace the RESULT_BUCKET variable placeholder with the ResultBucketName parameter value chosen\
-- [ ] Replace the SOURCE_BUCKET variable placeholder with the SourceBucketName parameter value chosen\
-- [ ] Replace the TEMPLATE_NAME variable placeholder with the desired CloudFormation template to be tested (e.g. 00-master-ohdsi.yaml)\
-- [ ] Replace the TOPIC_ARN variable placeholder with the ARN for the created SNS topic\
-- [ ] Replace the USER secrets-manager placeholder values with the secret name and username key you created in step 1 (eg. secret-name:userkey).\
-- [ ] Replace the PASSW secrets-manager placeholder values with the secret name and password key you created in step 1.\
+5. Make the following changes to the [environment in the buildspec.yml](https://github.com/aws-samples/aws-cloudformation-automated-testing-taskcat-aws-codepipeline/blob/901407a079099d7f7061b47f1cc005c6023f4a93/buildspec.yml#L2) file:
+- [ ] Replace the RESULT_BUCKET variable placeholder with the ResultBucketName parameter value chosen
+- [ ] Replace the SOURCE_BUCKET variable placeholder with the SourceBucketName parameter value chosen
+- [ ] Replace the TEMPLATE_NAME variable placeholder with the desired CloudFormation template to be tested (e.g. 00-master-ohdsi.yaml)
+- [ ] Replace the TOPIC_ARN variable placeholder with the ARN for the created SNS topic
+- [ ] Replace the USER secrets-manager placeholder values with the secret name and username key you created in step 1 (eg. secret-name:userkey).
+- [ ] Replace the PASSW secrets-manager placeholder values with the secret name and password key you created in step 1.
 - [ ] Replace the REGION and/or EB_ENDPOINT to match the test scenario parameters you entered for the taskcat.yml
 
 6. Go to CodeCommit repositorySet a new origin for the cloned repository to the newly created CodeCommit repository using the following command:
