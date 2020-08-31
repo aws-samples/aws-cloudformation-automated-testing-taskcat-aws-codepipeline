@@ -38,7 +38,7 @@ The architecture can be extended to test any CloudFormation stack. For this part
 A high-level diagram showing the overall architecture for the Automated Testing Pipeline is shown below.  
 ![alt-text](https://github.com/aws-samples/aws-cloudformation-automated-testing-taskcat-aws-codepipeline/blob/master/images/atp-architecture.png)
 
-##### General Architecture Description
+#### General Architecture Description
 The Automated Testing Pipeline solution as a whole is designed to automatically deploy CloudFormation templates, run tests against the deployed environments, send notifications if an issue is discovered, and allow for insightful testing data to be easily explored.
 
 The pipeline is triggered automatically when an event occurs. These events include a change to the CloudFormation solution template, a change to the code in the testing repository, and an alarm set off by a regular schedule. Additional events can be added in the CloudWatch console. 
@@ -64,23 +64,23 @@ The test results are stored in an S3 bucket. Information from these results are 
 
 Be sure to complete all prerequisite tasks before beginning deployment and all post-deployment tasks upon successful deployment of the Automated Testing Pipeline. See the **Troubleshooting Deployments** section if you experience any issues completing tasks to follow. 
 
-##### Prerequisite tasks
+#### Prerequisite tasks
 0.1. Clone this repository.
 
 0.2. [Create an EC2KeyPair](https://docs.aws.amazon.com/cli/latest/userguide/cli-services-ec2-keypairs.html) in the region you want to test the CloudFormation solution in. This will be used when TaskCat is run to deploy the CloudFormation solution template.
 
-##### Ensure you have appropriate permissions and limits
+#### Ensure you have appropriate permissions and limits
 0.3. This template must be run by an AWS IAM User who has sufficient permission to create the required resources. If you are not an Administrator of the AWS account you are using, please check with them before running this template to ensure you have sufficient permission.  
 
 0.4. This template will create four S3 buckets. Additional buckets may be created depending on the CloudFormation solution being tested. By default, AWS accounts have a limit of 100 S3 buckets. If you are near that limit, please either delete some unused S3 buckets or [request a limit increase](https://console.aws.amazon.com/support/cases#/create?issueType=service-limit-increase) before running this template.
 
-##### Begin deployment
+#### Begin deployment
 
 1. Begin the deployment process by clicking the **Launch Stack** button at the top of this page. This will take you to the [CloudFormation Manage Console](https://console.aws.amazon.com/cloudformation/) and specify the Automated Testing Pipeline CloudFormation template.  Then click the **Next** button in the lower-right corner. 
 	* You can also launch the CloudFormation Template by downloading the Pipeline_Template.yml from this repository and launching a stack with new resources.
 2. The next screen will take in all of the parameters for your pipeline environment.  A description is provided for each parameter to help explain its function, but following is also a detailed description of how to use each parameter.  At the top, provide a unique **Stack Name**. The ResultBucketName and SourceBucketName will be used to modify the code later on.
 
-##### General AWS parameters
+#### General AWS parameters
 |Parameter Name| Description|
 |---------------|-----------|
 | CodeBuildAccessSecretName|Name of the secret key used to perform tasks in codebuild|
@@ -99,7 +99,7 @@ Be sure to complete all prerequisite tasks before beginning deployment and all p
 
 *5. You can watch as CloudFormation builds out your pipeline environment. A CloudFormation deployment is called a *stack*. The parent stack creates several child stacks depending on the parameters you provided.  When all the stacks have reached the green CREATE_COMPLETE status, then the pipeline architecture has been deployed.*
 
-##### Post-Deployment Tasks to Begin Testing 
+#### Post-Deployment Tasks to Begin Testing 
 1. [Create a secret](https://docs.aws.amazon.com/secretsmanager/latest/userguide/tutorials_basic.html) containing a username and password to be used for testing OHSDI-on-AWS or REDCap. The secret name and keys will be used to modify the code later on.
 ![alt-text](https://github.com/aws-samples/aws-cloudformation-automated-testing-taskcat-aws-codepipeline/blob/master/images/secret-creation.png)
 
@@ -130,23 +130,23 @@ git remote set-url origin CODECOMMIT_URL_HERE
 
 7. Pushing to CodeCommit will automatically activate the Pipeline. You can monitor the testing through the CodeBuild Logs.
 
-##### Customizing Your Testing Solution
+#### Customizing Your Testing Solution
 If you wish to alter the Automated Testing Pipeline solution to best meet your use case, there are several changes you can make. 
 
 CloudWatch Events determine when the pipeline is automatically run. You can alter these rules to scale how frequently the pipeline runs. The pipeline is triggered every Monday by default under the schedule rule. Additionally, the pipeline is triggered when there is a change to the S3 bucket hosting the CloudFormation template or the TestCodeRepositoryBranch. Rules can be added, removed, or altered to meet your needs.
 
 If you wish to test a different CloudFormation template, you can do so by uploading your template to the source S3 bucket. You will need to follow the above deployment instructions for configuring the pipeline to access this template. You will likely need to upload custom test scripts to test this deployed environment. The scripts can be pushed to the created CodeCommit repository, and you will need to update the buildspec.yml file to run the custom scripts. 
 
-##### Using Dashboard
+#### Using Dashboard
 Once testing is complete, a static html object is stored in results S3 bucket that was created during deployment of the Automated Testing Pipeline. This object can be opened to view the test results dashboard. It can be accessed directly in S3 or via the link included in test failure notifications. Each test will be associated with one of three states: SUCCESS, FAILURE, and UNEXECUTED. For a more detailed look at the status of a test, click the **View Logs** link associated with it. Information including HTTP response codes, page response times, and error messages are stored within these logs to help discover causes of failures. 
 ![alt-text](https://github.com/aws-samples/aws-cloudformation-automated-testing-taskcat-aws-codepipeline/blob/master/images/dashboard.png)
 
-#### Troubleshooting Deployments
+### Troubleshooting Deployments
 
-##### CloudFormation Events
+#### CloudFormation Events
 A CloudFormation deployment is called a *stack*.  The Automated Testing Pipeline template deploys a number of child or *nested* stacks depending on which options you choose.  If one of the steps in any of these stacks fail during deployment, all of the stacks will be *rolled back*, meaning that they will be deleted in the reverse order that they were deployed.  In order to understand why a deployment rolled back, it can be helpful to look at the *events* that CloudFormation recorded during deployment.  You can do this by looking at the Events tab of each stack.  If a stack has already been rolled back, you will have to change the *filter* in the upper-left corner of the CloudFormation Management Console from it's default of *Active* to *Deleted* to see it's event log.
 
-##### Build Log
+#### Build Log
 If you are testing OHDSI-on-AWS, during the build process a temporary Linux instance is created that compiles WebAPI, combines it with Atlas, loads all of your OMOP data sets into Redshift, runs Achilles, and performs various other configuration functions.  You can see a log of the work that it did by looking in the [**CloudWatch Logs Management Console** under the *Log Group* ```ohdsi-temporary-ec2-instance-build-log```](https://console.aws.amazon.com/cloudwatch/home?logs%3A=#logStream:group=ohdsi-temporary-ec2-instance-build-log).
 ![alt-text](https://github.com/OHDSI/OHDSIonAWS/blob/master/images/cloudwatch_logs.gif)
 
