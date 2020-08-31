@@ -141,7 +141,7 @@ If you wish to test a different CloudFormation template, you can do so by upload
 Once testing is complete, a static html object is stored in results S3 bucket that was created during deployment of the Automated Testing Pipeline. This object can be opened to view the test results dashboard. It can be accessed directly in S3 or via the link included in test failure notifications. Each test will be associated with one of three states: SUCCESS, FAILURE, and UNEXECUTED. For a more detailed look at the status of a test, click the **View Logs** link associated with it. Information including HTTP response codes, page response times, and error messages are stored within these logs to help discover causes of failures. 
 ![alt-text](https://github.com/aws-samples/aws-cloudformation-automated-testing-taskcat-aws-codepipeline/blob/master/images/dashboard.png)
 
-### Troubleshooting Deployments
+## Troubleshooting Deployments
 
 #### CloudFormation Events
 A CloudFormation deployment is called a *stack*.  The Automated Testing Pipeline template deploys a number of child or *nested* stacks depending on which options you choose.  If one of the steps in any of these stacks fail during deployment, all of the stacks will be *rolled back*, meaning that they will be deleted in the reverse order that they were deployed.  In order to understand why a deployment rolled back, it can be helpful to look at the *events* that CloudFormation recorded during deployment.  You can do this by looking at the Events tab of each stack.  If a stack has already been rolled back, you will have to change the *filter* in the upper-left corner of the CloudFormation Management Console from it's default of *Active* to *Deleted* to see it's event log.
