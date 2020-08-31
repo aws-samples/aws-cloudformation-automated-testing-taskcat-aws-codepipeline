@@ -33,6 +33,7 @@ phases:
       - pip install boto3
       - pip install webdriver_manager
       - pip install beautifulsoup4
+      - pip install pyyaml
       - aws configure set aws_access_key_id $AWSid
       - aws configure set aws_secret_access_key $AWSkey
       - aws configure set default.region us-east-1
@@ -54,6 +55,7 @@ phases:
   build:
     commands:
       - echo Build phase started on `date`
+      - python 3 insert_vars.py .taskcat.yml $USERN $PASSW
       # - taskcat --quiet test run
       # - taskcat --debug test run
       - taskcat test run --no-delete
