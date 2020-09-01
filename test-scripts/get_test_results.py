@@ -1,3 +1,7 @@
+# This script parses the generated json test results and
+# injects them into the taskcat generated html dashboard
+# and publishes messages to the SNS topic when an error is found
+
 import boto3
 import sys
 import re
@@ -35,6 +39,7 @@ with open('taskcat_outputs/index.html') as fp:
 			if(test_results == "SUCCESS"):
 				new_test_result = soup.new_tag("td", attrs={"class": "test-green"})
 			else:
+				# Send an error message if a failure is found
 				new_test_result = soup.new_tag("td", attrs={"class": "test-red"})
 				print("FAILURE found")
 				client = boto3.client('sns')

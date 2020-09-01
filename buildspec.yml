@@ -24,6 +24,7 @@ phases:
     runtime-versions:
       python: 3.7
     commands:
+      # install dependencies
       - echo install phase started on `date`
       - python --version
       - 'curl -O https://bootstrap.pypa.io/get-pip.py'
@@ -50,23 +51,25 @@ phases:
       - yum install -y google-chrome-stable
       - cd $CODEBUILD_SRC_DIR
       - pip3 install taskcat
+      # grab the template from the source bucket
       - mkdir templates
       - aws s3 cp s3://$SOURCE_BUCKET/$TEMPLATE_NAME templates/$TEMPLATE_NAME
   build:
     commands:
       - echo Build phase started on `date`
+      # inject the username and password into the taskcat file
       - python 3 insert_vars.py .taskcat.yml $USERN $PASSW
-      # - taskcat --quiet test run
-      # - taskcat --debug test run
+      # run taskcat without deleting
       - taskcat test run --no-delete
       - taskcat test list
+      # wait to make sure stack resources are created
       - sleep 120
+      # test the cloudformation stack
       - python3 test-scripts/tests.py $EB_ENDPOINT $REGION $USERN $PASSW $RESULT_BUCKET
       - ls
   post_build:
     commands:
       - echo post build phase started on `date`;
       # Delete the stack if all tests ran successfully
-      # - if [ $CODEBUILD_BUILD_SUCCEEDING -eq 1 ]; then python3 getTestResults.py; taskcat test clean ALL; fi
-      - python3 test-scripts/get_test_results.py $REGION odshi-on-aws $TOPIC_ARN $RESULT_BUCKET
+      - if [ $CODEBUILD_BUILD_SUCCEEDING -eq 1 ]; then python3 test-scripts/get_test_results.py $REGION odshi-on-aws $TOPIC_ARN $RESULT_BUCKET; taskcat test clean ALL; fi
       - aws s3 cp --recursive --acl public-read ./taskcat_outputs s3://$RESULT_BUCKET
