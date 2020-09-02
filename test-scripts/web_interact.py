@@ -10,6 +10,7 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.chrome.options import Options
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
+from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 
@@ -127,8 +128,8 @@ def log_in(driver, user, passw, link, btn_path, title):
     try:
         WebDriverWait(driver, 20).until(ec.url_changes(link))
         WebDriverWait(driver, 20).until(ec.title_is(title))
-    except Exception as e:
-        print("Timeout occurred attempting to sign in to " + driver.current_url)
+    except TimeoutException as e:
+        print("Timeout occurred (" + e + ") while attempting to sign in to " + driver.current_url)
         if "Sign In" in driver.title or "invalid user" in driver.page_source.lower():
             return 'FAILURE', 'Incorrect username or password'
         else:
