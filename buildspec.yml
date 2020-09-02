@@ -58,7 +58,7 @@ phases:
     commands:
       - echo Build phase started on `date`
       # inject the username and password into the taskcat file
-      - python 3 insert_vars.py .taskcat.yml $USERN $PASSW
+      - python3 insert_vars.py .taskcat.yml $USERN $PASSW
       # run taskcat without deleting
       - taskcat test run --no-delete
       - taskcat test list
