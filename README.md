@@ -2,7 +2,7 @@
 
 ## Quick Start
 
-<a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=MyTestingPipeline=https://testing-pipeline-amc-sa.s3.amazonaws.com/Pipeline_Template.yml" target="_blank"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a>
+<a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=MyTestingPipeline&templateURL=https://testing-pipeline-amc-sa.s3.amazonaws.com/Pipeline_Template.yml" target="_blank"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/></a>
 
 Click the launch button above to begin the process of deploying an Automated Testing Pipeline on AWS CloudFormation. NOTE: This launch button already has the *US East* region pre-selected as part of the URL (i.e., &region=us-east-1), but once you click the button, you can change your preferred deployment region in AWS by selecting it from the top bar of the AWS Console, after which you may need to provide the Amazon S3 Template URL (https://testing-pipeline-amc-sa.s3.amazonaws.com/Pipeline_Template.yml).
 
