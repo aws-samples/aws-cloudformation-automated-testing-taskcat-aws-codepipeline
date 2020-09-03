@@ -1,0 +1,68 @@
+{
+  "id": 3,
+  "name": "TEST COHORT - Patients Treated with Zocor",
+  "description": "Testing cohort creation",
+  "createdBy": "user",
+  "createdDate": "2020-07-28 11:02",
+  "modifiedBy": "user",
+  "modifiedDate": "2020-07-28 11:02",
+  "expression": {
+    "cdmVersionRange": ">=5.0.0",
+    "PrimaryCriteria": {
+      "CriteriaList": [
+        {
+          "DrugEra": {
+            "CodesetId": 1
+          }
+        }
+      ],
+      "ObservationWindow": {
+        "PriorDays": 365,
+        "PostDays": 365
+      },
+      "PrimaryCriteriaLimit": {
+        "Type": "First"
+      }
+    },
+    "ConceptSets": [
+      {
+        "id": 1,
+        "name": "Zocor",
+        "expression": {
+          "items": [
+            {
+              "concept": {
+                "CONCEPT_ID": 1539403,
+                "CONCEPT_NAME": "Simvastatin",
+                "STANDARD_CONCEPT": "S",
+                "STANDARD_CONCEPT_CAPTION": "Standard",
+                "INVALID_REASON": "V",
+                "INVALID_REASON_CAPTION": "Valid",
+                "CONCEPT_CODE": "36567",
+                "DOMAIN_ID": "Drug",
+                "VOCABULARY_ID": "RxNorm",
+                "CONCEPT_CLASS_ID": "Ingredient"
+              },
+              "isExcluded": false,
+              "includeDescendants": false,
+              "includeMapped": false
+            }
+          ]
+        }
+      }
+    ],
+    "QualifiedLimit": {
+      "Type": "First"
+    },
+    "ExpressionLimit": {
+      "Type": "First"
+    },
+    "InclusionRules": [],
+    "CensoringCriteria": [],
+    "CollapseSettings": {
+      "CollapseType": "ERA",
+      "EraPad": 0
+    },
+    "CensorWindow": {}
+  }
+}
