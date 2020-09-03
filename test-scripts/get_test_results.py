@@ -11,7 +11,7 @@ import json
 region = sys.argv[1]
 folder = sys.argv[2]
 topic_arn = sys.argv[3]
-result_bucket = system.argv[4]
+result_bucket = sys.argv[4]
 
 test_log_file = 'test-scripts/test_output_' + region + '.json'
 
