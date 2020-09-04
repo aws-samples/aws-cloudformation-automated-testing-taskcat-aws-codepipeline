@@ -20,7 +20,6 @@ If you are interested in deploying OHDSI-on-AWS without a testing pipeline, see 
 * [Automated Testing Pipeline deployment instructions](#auto-test-pipeline-deployment-instructions)
 * [Uploading source files](#uploading-sources)
 * [Troubleshooting Deployments](#troubleshooting-deployments)
-* [Ongoing Operations](#on-going-operations)
 
 ## Automated Testing Pipeline architecture and features
 
