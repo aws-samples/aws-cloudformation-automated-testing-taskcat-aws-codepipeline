@@ -21,6 +21,7 @@ from datetime import datetime
 BUCKET = ""
 USER = ""
 PASSW = ""
+FAILURE_FOUND = False
 
 
 def test_pages(outputs, filename):
@@ -87,6 +88,7 @@ def test_page(driver, link, all_tests, key, btn_path):
         :param btn_path: xpath to submit button
         :return: populated test info object
     """
+    global FAILURE_FOUND
 
     test = tob.new_test(key, 'get page attempt')
     all_tests.append(test)
@@ -108,6 +110,8 @@ def test_page(driver, link, all_tests, key, btn_path):
         test = tob.new_test(key, 'sign in attempt')
         all_tests.append(test)
         all_tests = sign_in(driver, link, btn_path, test, all_tests)
+    else:
+        FAILURE_FOUND = True
 
     return all_tests
 
@@ -122,6 +126,7 @@ def sign_in(driver, link, btn_path, test, all_tests):
         :param btn_path: xpath to submit button
         :return: populated test info object
     """
+    global FAILURE_FOUND
 
     if "ATLAS" not in btn_path:
         tag = tob.get_tag(test)
@@ -130,6 +135,7 @@ def sign_in(driver, link, btn_path, test, all_tests):
         test = tob.resolve_sts(test, wi.log_in(driver, USER, PASSW, link, btn_path, tag))
         # perform second sign in attempt if first fails
         if tob.get_sts(test) == 'FAILURE':
+            FAILURE_FOUND = True
             test = tob.resolve_sts(test, wi.log_in(driver, USER, PASSW, link, btn_path, tag))
         test = tob.add_response(test, link, driver)
         all_tests.pop()
@@ -150,16 +156,23 @@ def atlas_test(user, passw, link, all_tests, test):
         :param test: default sign in test object
         :return: success String if log in completed, failure description String otherwise
     """
+    global FAILURE_FOUND
+
     full_link = link + "/WebAPI/user/login/db"
     command = ("curl -c cookies.txt -v -s " + full_link + " 2>&1 -X POST -d \"rememberMe=true\" "
                "-d \"login=" + user + "\" --data-urlencode \"password=" + passw + "\"")
 
-    sts = wi.curl_http(command)
+    resp = wi.curl_cmd(command)
+    if 'error' in resp:
+        sts = '---'
+    else:
+        sts = wi.curl_http(command)
 
     test = tob.add_response(test, link)
     test = tob.set_http_sts(test, sts)
 
     if sts != '200':
+        FAILURE_FOUND = True
         if sts == '401':
             test = tob.fail(test, 'Incorrect username or password')
         elif sts == '403':
@@ -180,6 +193,8 @@ def atlas_test(user, passw, link, all_tests, test):
         cohort_test = create_cohort(command, user, link, cohort_test)
         all_tests.pop()
         all_tests.append(cohort_test)
+    else:
+        FAILURE_FOUND = True
 
     return all_tests
 
@@ -317,6 +332,10 @@ def main(args):
         exit(-1)
     except Exception as e:
         print(e)
+        exit(-1)
+
+    global FAILURE_FOUND
+    if FAILURE_FOUND is True:
         exit(-1)
 
 

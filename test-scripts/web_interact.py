@@ -69,7 +69,7 @@ def curl_cmd(command):
         ret = subprocess.check_output(command, shell=True)
     except Exception as e:
         print(e)
-        exit(-1)
+        return str(e)
     return str(ret)
 
 
