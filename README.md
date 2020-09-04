@@ -36,7 +36,7 @@ The architecture can be extended to test any CloudFormation stack. For this part
 * Low in cost with free tier benefits ([ATP_Costs.xlsx](https://quip-amazon.com/-/blob/YXZ9AAUTCk9/hZ1k7KA2FcSxLvrLPTzeOA?name=ATP_Costs.xlsx))
 
 A high-level diagram showing the overall architecture for the Automated Testing Pipeline is shown below.  
-![alt-text](https://github.com/aws-samples/aws-cloudformation-automated-testing-taskcat-aws-codepipeline/blob/master/images/atp-architecture.png)
+![alt-text](https://github.com/aws-samples/aws-cloudformation-automated-testing-taskcat-aws-codepipeline/blob/master/images/atp-architecture-diagram.png)
 
 #### General Architecture Description
 The Automated Testing Pipeline solution as a whole is designed to automatically deploy CloudFormation templates, run tests against the deployed environments, send notifications if an issue is discovered, and allow for insightful testing data to be easily explored.
