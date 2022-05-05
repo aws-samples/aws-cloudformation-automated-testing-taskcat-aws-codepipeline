@@ -20,7 +20,7 @@ def insert_creds(filename, user, passw):
 
     try:
         with open(filename, 'r') as f:
-            doc = yaml.load(f, Loader=yaml.FullLoader)
+            doc = yaml.safe_load(f, Loader=yaml.FullLoader)
 
             # alter credentials for each test scenario
             scenarios = []
